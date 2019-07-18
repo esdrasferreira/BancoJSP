@@ -27,8 +27,7 @@ public class ContaDao {
 
 			conn = this.conexao;
 			ps = conn.prepareStatement(
-					"SELECT contacorrente.conta, contacorrente.saldo FROM bancomvc.cliente, bancomvc.contacorrente where bancomvc.cliente.conta = '"
-							+ conta + "' ");
+					"SELECT * FROM `contacorrente` WHERE `conta` = '"+conta+"' ");
 
 			rs = ps.executeQuery();
 
@@ -63,8 +62,7 @@ public class ContaDao {
 			int idConta = conta.getConta();
 			double saldo = conta.getSaldo();
 
-			st.executeUpdate("UPDATE `contacorrente` SET `saldo` = '" + saldo + "' WHERE `contacorrente`.`conta` = '"
-					+ idConta + "' ");
+			st.executeUpdate("UPDATE `contacorrente` SET `saldo` = '" + saldo + "' WHERE `contacorrente`.`conta` = '"+ idConta + "' ");
 
 		} catch (SQLException sqle) {
 			throw new Exception(sqle);
@@ -76,22 +74,22 @@ public class ContaDao {
 
 	}
 	
-	public void transferencia(int id, double valor) throws Exception {
+	public void transferencia(double saldo, int id) throws Exception {
 
-		PreparedStatement ps = null;
+		Statement st = null;
 		Connection conn = null;
+		
+		
 
 		try {
 			conn = this.conexao;
-			ps = conn.prepareStatement("UPDATE `contacorrente` SET `saldo` = ? WHERE `contacorrente`.`conta` = ?");
-			ps.setDouble(1, valor);
-			ps.setInt(2, id);
-
-			ps.executeUpdate();
+			st = conn.createStatement();
+			st.executeUpdate("UPDATE `contacorrente` SET `saldo` = '" + saldo + "' WHERE `contacorrente`.`conta` = '"+ id + "' ");
+			
 		} catch (SQLException sqle) {
 			throw new Exception();
 		} finally {
-			FabricaConexao.fecharPreparedStatement(ps);
+			FabricaConexao.fecharStatement(st);
 			fecharConexao();
 		}
 
